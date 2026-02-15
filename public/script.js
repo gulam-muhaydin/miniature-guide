@@ -159,12 +159,12 @@ if (document.getElementById('payment-form')) {
                 showPopup('Payment proof submitted! Please wait for approval.', 'success');
                 window.location.href = 'waiting.html';
             } else {
-                if (res.status === 401 && data.message === 'No token') {
+                if (res.status === 401 || res.status === 404) {
                     showPopup('Session expired, please login again.', 'warning');
                     window.location.href = '/index.html';
-                } else {
-                    showPopup(data.message || 'Error submitting payment', 'error');
+                    return;
                 }
+                showPopup(data.message || 'Error submitting payment', 'error');
             }
         } catch (err) {
             showPopup('Error submitting payment', 'error');
@@ -181,6 +181,9 @@ async function checkUserStatus() {
         const user = await res.json();
         
         if (!res.ok) {
+            if (res.status === 401 || res.status === 404) {
+                window.location.href = '/index.html';
+            }
             return;
         }
 
