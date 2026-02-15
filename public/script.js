@@ -154,7 +154,9 @@ function checkRedirect(user) {
     } else if (user.isApproved) {
         window.location.href = '/dashboard.html';
     } else if (user.paymentProof && user.paymentProof.status === 'none') {
-        window.location.href = '/payment.html';
+        const url = new URL('/payment.html', window.location.origin);
+        if (userId) url.searchParams.set('uid', userId);
+        window.location.href = url.toString();
     } else {
         window.location.href = '/plans.html';
     }
@@ -166,26 +168,45 @@ function selectPlan(plan, price) {
     url.searchParams.set('plan', plan);
     url.searchParams.set('price', price);
     const currentParams = new URLSearchParams(window.location.search);
-    const uid = currentParams.get('uid') || getCookieValue('uid');
+    const uid = currentParams.get('uid') || (window.localStorage && window.localStorage.getItem('uid')) || getCookieValue('uid');
     if (uid) url.searchParams.set('uid', uid);
     window.location.href = url.toString();
 }
 
 // Payment Form
 if (document.getElementById('payment-form')) {
+    let isSubmittingPayment = false;
     document.getElementById('payment-form').onsubmit = async (e) => {
         e.preventDefault();
+        if (isSubmittingPayment) return;
         const method = 'JazzCash';
         const transactionId = document.getElementById('transactionId')?.value;
         const params = new URLSearchParams(window.location.search);
         const plan = params.get('plan');
-        const userId = params.get('uid') || getCookieValue('uid');
+        const userId = params.get('uid') || (window.localStorage && window.localStorage.getItem('uid')) || getCookieValue('uid');
+
+        const form = document.getElementById('payment-form');
+        const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+        const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
+        const btnLoader = submitBtn ? submitBtn.querySelector('.btn-loader') : null;
+
+        if (!userId) {
+            showPopup('Session missing. Please login again.', 'warning');
+            window.location.href = '/index.html';
+            return;
+        }
 
         try {
+            isSubmittingPayment = true;
+            if (submitBtn) submitBtn.disabled = true;
+            if (btnLoader) btnLoader.classList.remove('hidden');
+            if (btnText) btnText.classList.add('hidden');
+
             const res = await fetch(API_URL + '/payment/submit', {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-User-Id': userId
                 },
                 credentials: 'include',
                 body: JSON.stringify({ method, transactionId, plan, userId })
@@ -196,14 +217,21 @@ if (document.getElementById('payment-form')) {
                 window.location.href = '/waiting.html';
             } else {
                 if (res.status === 401 || res.status === 404) {
-                    showPopup('Session expired, please login again.', 'warning');
-                    window.location.href = '/index.html';
-                    return;
+                    showPopup(data.message || 'Session expired, please login again.', 'warning');
+                    if (!userId) {
+                        window.location.href = '/index.html';
+                        return;
+                    }
                 }
                 showPopup(data.message || 'Error submitting payment', 'error');
             }
         } catch (err) {
             showPopup('Error submitting payment', 'error');
+        } finally {
+            isSubmittingPayment = false;
+            if (submitBtn) submitBtn.disabled = false;
+            if (btnLoader) btnLoader.classList.add('hidden');
+            if (btnText) btnText.classList.remove('hidden');
         }
     };
 }

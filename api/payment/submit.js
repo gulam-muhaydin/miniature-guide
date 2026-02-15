@@ -29,14 +29,21 @@ module.exports = async (req, res) => {
     const token = getToken(req);
     const { method, transactionId, plan, userId: bodyUserId } = req.body;
 
-    let userId = bodyUserId || getUid(req);
+    const headerUserId = req.headers['x-user-id'];
+    let userId = bodyUserId || headerUserId || getUid(req);
 
     if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      userId = decoded.userId;
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userId = decoded.userId;
+      } catch (e) {
+        if (!userId) {
+          return res.status(401).json({ message: 'Invalid session' });
+        }
+      }
     }
 
-    if (!userId) return res.status(401).json({ message: 'No token' });
+    if (!userId) return res.status(401).json({ message: 'No session' });
 
     await connectDB();
 
