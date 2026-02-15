@@ -51,8 +51,13 @@ app.get('/admin', (req, res) => {
 });
 
 app.get(/^(?!\/api).*/, (req, res) => {
-    const requestedPath = req.path === '/' ? '/index.html' : req.path;
-    const filePath = path.join(publicDir, requestedPath);
+    const requestedPath = req.path === '/' ? 'index.html' : req.path.replace(/^\/+/, '');
+    const safePath = path.normalize(requestedPath);
+    if (safePath.startsWith('..') || path.isAbsolute(safePath)) {
+        res.sendFile(path.join(publicDir, 'index.html'));
+        return;
+    }
+    const filePath = path.join(publicDir, safePath);
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
         return;
