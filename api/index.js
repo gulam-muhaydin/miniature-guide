@@ -32,18 +32,18 @@ const handleVercel = (fn) => async (req, res) => {
     }
 };
 
-app.post('/api/auth/login', handleVercel(require('./auth/login')));
-app.post('/api/auth/signup', handleVercel(require('./auth/signup')));
-app.post('/api/auth/logout', handleVercel(require('./auth/logout')));
-app.post('/api/payment/submit', handleVercel(require('./payment/submit')));
-app.get('/api/user/profile', handleVercel(require('./user/profile')));
-app.get('/api/user/referrals', handleVercel(require('./user/referrals')));
-app.post('/api/user/watch-video', handleVercel(require('./user/watch-video')));
-app.post('/api/user/withdraw', handleVercel(require('./user/withdraw')));
-app.get('/api/admin/list-pending', handleVercel(require('./admin/list-pending')));
-app.post('/api/admin/approve', handleVercel(require('./admin/approve')));
-app.get('/api/admin/withdrawals', handleVercel(require('./admin/withdrawals')));
-app.post('/api/admin/withdrawals-update', handleVercel(require('./admin/withdrawals-update')));
+app.post('/api/auth/login', handleVercel(require('../lib/api/auth/login')));
+app.post('/api/auth/signup', handleVercel(require('../lib/api/auth/signup')));
+app.post('/api/auth/logout', handleVercel(require('../lib/api/auth/logout')));
+app.post('/api/payment/submit', handleVercel(require('../lib/api/payment/submit')));
+app.get('/api/user/profile', handleVercel(require('../lib/api/user/profile')));
+app.get('/api/user/referrals', handleVercel(require('../lib/api/user/referrals')));
+app.post('/api/user/watch-video', handleVercel(require('../lib/api/user/watch-video')));
+app.post('/api/user/withdraw', handleVercel(require('../lib/api/user/withdraw')));
+app.get('/api/admin/list-pending', handleVercel(require('../lib/api/admin/list-pending')));
+app.post('/api/admin/approve', handleVercel(require('../lib/api/admin/approve')));
+app.get('/api/admin/withdrawals', handleVercel(require('../lib/api/admin/withdrawals')));
+app.post('/api/admin/withdrawals-update', handleVercel(require('../lib/api/admin/withdrawals-update')));
 
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(publicDir, 'admin.html'));
