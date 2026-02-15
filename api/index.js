@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const serverless = require('serverless-http');
 const connectDB = require('../lib/db');
 
@@ -50,6 +51,12 @@ app.get('/admin', (req, res) => {
 });
 
 app.get(/^(?!\/api).*/, (req, res) => {
+    const requestedPath = req.path === '/' ? '/index.html' : req.path;
+    const filePath = path.join(publicDir, requestedPath);
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+        return;
+    }
     res.sendFile(path.join(publicDir, 'index.html'));
 });
 
