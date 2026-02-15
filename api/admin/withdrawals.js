@@ -1,5 +1,5 @@
-const connectDB = require('../../db');
-const { User } = require('../../models');
+const connectDB = require('../../lib/db');
+const { User } = require('../../lib/models');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') return res.status(405).json({ message: 'Method Not Allowed' });

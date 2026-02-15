@@ -1,5 +1,5 @@
-const connectDB = require('../../db');
-const { User } = require('../../models');
+const connectDB = require('../../lib/db');
+const { User } = require('../../lib/models');
 const jwt = require('jsonwebtoken');
 
 const getToken = (req) => {
@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
   try {
     await connectDB();
 
-    const { userId, status } = req.body;
+    const { userId, status } = req.body; // status: 'approved' or 'rejected'
     if (!userId || !status) return res.status(400).json({ message: 'Missing data' });
     if (!['approved', 'rejected'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
@@ -41,6 +41,7 @@ module.exports = async (req, res) => {
       }
     });
 
+    // Increment referralCount of referrer if approved
     if (status === 'approved' && user && user.referredBy) {
       const referrer = await User.findById(user.referredBy);
       if (referrer) {

@@ -1,5 +1,5 @@
-const connectDB = require('../../db');
-const { User } = require('../../models');
+const connectDB = require('../../lib/db');
+const { User } = require('../../lib/models');
 const jwt = require('jsonwebtoken');
 
 const getToken = (req) => {
