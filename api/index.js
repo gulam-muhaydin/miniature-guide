@@ -65,4 +65,6 @@ app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(path.join(publicDir, 'index.html'));
 });
 
-module.exports = serverless(app);
+const handler = serverless(app);
+handler.app = app;
+module.exports = handler;
