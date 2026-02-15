@@ -467,7 +467,10 @@
             try {
                 const res = await fetch('/api/user/withdraw', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Id': (new URLSearchParams(window.location.search).get('uid') || (window.localStorage && window.localStorage.getItem('uid')) || (window.getCookieValue && window.getCookieValue('uid')) || '')
+                    },
                     credentials: 'include',
                     body: JSON.stringify({
                         userId: (new URLSearchParams(window.location.search).get('uid') || (window.localStorage && window.localStorage.getItem('uid')) || (window.getCookieValue && window.getCookieValue('uid')) || null),

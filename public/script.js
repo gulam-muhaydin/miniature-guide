@@ -53,6 +53,14 @@ function initDownloadLinks() {
 }
 
 document.addEventListener('DOMContentLoaded', initDownloadLinks);
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const uid = getCookieValue('uid');
+        if (uid && window.localStorage && !window.localStorage.getItem('uid')) {
+            window.localStorage.setItem('uid', uid);
+        }
+    } catch (e) {}
+});
 
 let isLogin = true;
 

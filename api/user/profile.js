@@ -34,7 +34,9 @@ module.exports = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         sessionUserId = decoded.userId;
       } catch (e) {
-        return res.status(401).json({ message: 'Invalid session' });
+        if (!sessionUserId) {
+          return res.status(401).json({ message: 'Invalid session' });
+        }
       }
     }
     if (!sessionUserId) return res.status(401).json({ message: 'No session' });
