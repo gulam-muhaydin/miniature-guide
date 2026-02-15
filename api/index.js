@@ -23,7 +23,6 @@ app.use(express.static(publicDir));
 
 const handleVercel = (fn) => async (req, res) => {
     try {
-        await connectDB();
         await fn(req, res);
     } catch (err) {
         console.error('API Error:', err.message);
