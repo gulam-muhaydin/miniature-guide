@@ -291,7 +291,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=5"></script>
     <script>
         const planConfig = {
             'basic': { limit: 5, pay: 20 },
@@ -309,7 +309,9 @@
 
         async function loadVideos() {
             try {
-                const res = await fetch('/api/user/profile', { credentials: 'include' });
+                const uid = (new URLSearchParams(location.search).get('uid')) || (localStorage.getItem('uid')) || (document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('uid='))||'').split('=').slice(1).join('=') || '';
+                const headers = uid ? { 'X-User-Id': uid } : {};
+                const res = await fetch('/api/user/profile', { credentials: 'include', headers });
                 const user = await res.json();
                 
                 if (!res.ok) return window.location.href = '/index.html';
@@ -351,7 +353,9 @@
             if (isWatching) return;
 
             // Check limit first from profile
-            const res = await fetch('/api/user/profile', { credentials: 'include' });
+            const uid = (new URLSearchParams(location.search).get('uid')) || (localStorage.getItem('uid')) || (document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('uid='))||'').split('=').slice(1).join('=') || '';
+            const headers = uid ? { 'X-User-Id': uid } : {};
+            const res = await fetch('/api/user/profile', { credentials: 'include', headers });
             const user = await res.json();
             if (user.videosLeft <= 0) {
                 window.showPopup && window.showPopup('Your daily video limit has been reached!', 'warning');
@@ -383,9 +387,11 @@
 
         async function finishWatching() {
             try {
+                const uid = (new URLSearchParams(location.search).get('uid')) || (localStorage.getItem('uid')) || (document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('uid='))||'').split('=').slice(1).join('=') || '';
+                const headers = uid ? { 'X-User-Id': uid, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
                 const res = await fetch('/api/user/watch-video', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     credentials: 'include'
                 });
                 const data = await res.json();

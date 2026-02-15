@@ -208,19 +208,23 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js?v=5"></script>
     <script>
-        fetch('/api/user/profile', { credentials: 'include' })
-            .then(res => res.ok ? res.json() : null)
-            .then(user => {
-                if (!user) return;
-                if (user.paymentProof && user.paymentProof.status === 'pending') {
-                    window.location.href = '/waiting.html';
-                } else if (user.isApproved) {
-                    window.location.href = '/dashboard.html';
-                }
-            })
-            .catch(() => {});
+        (function () {
+            var uid = (new URLSearchParams(location.search).get('uid')) || (localStorage.getItem('uid')) || (document.cookie.split(';').map(function (c) { return c.trim(); }).find(function (c) { return c.startsWith('uid='); }) || '').split('=').slice(1).join('=') || '';
+            var headers = uid ? { 'X-User-Id': uid } : {};
+            fetch('/api/user/profile', { credentials: 'include', headers: headers })
+                .then(function (res) { return res.ok ? res.json() : null; })
+                .then(function (user) {
+                    if (!user) return;
+                    if (user.paymentProof && user.paymentProof.status === 'pending') {
+                        window.location.href = '/waiting.html';
+                    } else if (user.isApproved) {
+                        window.location.href = '/dashboard.html';
+                    }
+                })
+                .catch(function () { });
+        })();
     </script>
 </body>
 </html>

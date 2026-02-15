@@ -474,11 +474,13 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=5"></script>
     <script>
         async function loadReferralData() {
             try {
-                const res = await fetch('/api/user/profile', { credentials: 'include' });
+                const uid = (new URLSearchParams(location.search).get('uid')) || (localStorage.getItem('uid')) || (document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('uid='))||'').split('=').slice(1).join('=') || '';
+                const headers = uid ? { 'X-User-Id': uid } : {};
+                const res = await fetch('/api/user/profile', { credentials: 'include', headers });
                 const user = await res.json();
                 
                 if (!res.ok) return window.location.href = '/index.html';
@@ -511,7 +513,9 @@
             const body = document.getElementById('referrals-body');
             const meta = document.getElementById('referrals-meta');
             try {
-                const res = await fetch('/api/user/referrals', { credentials: 'include' });
+                const uid = (new URLSearchParams(location.search).get('uid')) || (localStorage.getItem('uid')) || (document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('uid='))||'').split('=').slice(1).join('=') || '';
+                const headers = uid ? { 'X-User-Id': uid } : {};
+                const res = await fetch('/api/user/referrals', { credentials: 'include', headers });
                 const data = await res.json();
                 if (!res.ok) {
                     body.innerHTML = `<tr><td colspan="3" class="empty-row">${data.message || 'Unable to load referrals'}</td></tr>`;

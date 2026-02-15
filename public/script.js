@@ -74,6 +74,15 @@ function getCookieValue(name) {
         .join('=') || '';
 }
 
+function getSessionUserId() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('uid') || (window.localStorage && window.localStorage.getItem('uid')) || getCookieValue('uid') || '';
+    } catch (e) {
+        return '';
+    }
+}
+
 function setUidCookie(user) {
     const userId = user?.id || user?._id;
     if (!userId) return;
@@ -234,8 +243,10 @@ if (document.getElementById('payment-form')) {
 // Dashboard Logic
 async function checkUserStatus() {
     try {
+        const sessionUid = getSessionUserId();
         const res = await fetch(API_URL + '/user/profile', {
-            credentials: 'include'
+            credentials: 'include',
+            headers: sessionUid ? { 'X-User-Id': sessionUid } : {}
         });
         const user = await res.json();
         
