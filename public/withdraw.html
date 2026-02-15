@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw - EarnTube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --top-bar-height: 80px;
+            --sidebar-bg: #111114;
+            --sidebar-hover: rgba(255, 255, 255, 0.05);
+            --sidebar-active: rgba(255, 0, 3, 0.1);
+            --content-bg: #0a0a0b;
+        }
+
+        body {
+            background-color: var(--content-bg);
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-header .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .sidebar-header .logo i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: var(--primary);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            height: var(--top-bar-height);
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            background: var(--input-bg);
+            padding: 8px 16px;
+            border-radius: 100px;
+            border: 1px solid var(--card-border);
+        }
+
+        .content-container {
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .withdraw-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+        }
+
+        .balance-display {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .balance-display h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .balance-display .amount {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .method-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .method-option {
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .method-option.active {
+            border-color: var(--primary);
+            background: rgba(255, 0, 3, 0.05);
+        }
+
+        .method-option img {
+            height: 40px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .method-option span {
+            display: block;
+            font-weight: 600;
+        }
+
+        .withdraw-form .input-group {
+            margin-bottom: 24px;
+        }
+
+        .withdraw-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .withdraw-form input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            color: #fff;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .withdraw-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .withdraw-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .withdraw-btn:hover {
+            background: #ff1a1d;
+            transform: translateY(-2px);
+        }
+
+        .requirements-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .requirement-item.met {
+            color: var(--success);
+        }
+
+        .requirement-item i {
+            font-size: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .content-container {
+                padding: 16px;
+                max-width: 100%;
+            }
+
+            .withdraw-card {
+                padding: 20px;
+                border-radius: 18px;
+            }
+
+            .balance-display {
+                margin-bottom: 24px;
+                padding-bottom: 18px;
+            }
+
+            .balance-display .amount {
+                font-size: 36px;
+            }
+
+            .method-selector {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .method-option {
+                padding: 16px;
+            }
+
+            .requirements-box {
+                padding: 16px;
+            }
+
+            .requirement-item {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo"><i class="fa-solid fa-play-circle"></i>Earn<span>Tube</span></span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="videos.html" class="nav-item">
+                    <i class="fa-solid fa-video"></i>
+                    <span>Videos</span>
+                </a>
+                <a href="withdraw.html" class="nav-item active">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="referral.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Referral</span>
+                </a>
+                <a href="levels.html" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Levels</span>
+                </a>
+                <a href="/EarnTube.apk" class="nav-item" download="EarnTube.apk">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="user-profile">
+                    <i class="fa-solid fa-circle-user" style="color: var(--primary);"></i>
+                    <span id="user-display">Loading...</span>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <div class="withdraw-card">
+                    <div class="balance-display">
+                        <h3>Your Balance</h3>
+                        <div id="balance-amount" class="amount">Rs. 0</div>
+                    </div>
+
+                    <div class="method-selector">
+                        <div class="method-option active" onclick="selectMethod('EasyPaisa', this)">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwqruf1UvmRQzQT9ZHzt8juyl_9QQcbzjicA&s" alt="EasyPaisa" onerror="this.src='https://via.placeholder.com/40x40?text=EP'">
+                            <span>EasyPaisa</span>
+                        </div>
+                        <div class="method-option" onclick="selectMethod('JazzCash', this)">
+                            <img src="https://iconlogovector.com/uploads/images/2025/11/lg-691c164eec616-JazzCash.webp" alt="JazzCash" onerror="this.src='https://via.placeholder.com/40x40?text=JC'">
+                            <span>JazzCash</span>
+                        </div>
+                    </div>
+
+                    <form id="withdraw-form" class="withdraw-form">
+                        <div class="input-group">
+                            <label>Account Number</label>
+                            <input type="text" id="accNumber" placeholder="e.g. 03001234567" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Account Title</label>
+                            <input type="text" id="accTitle" placeholder="e.g. John Doe" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Withdraw Amount (Min: 500)</label>
+                            <input type="number" id="amount" placeholder="Minimum 500" min="500" required>
+                        </div>
+                        <button type="submit" class="withdraw-btn">Submit Request</button>
+                    </form>
+
+                    <div class="requirements-box">
+                        <h4 style="margin-bottom: 15px; font-size: 14px;">Withdrawal Requirements:</h4>
+                        <div id="req-referral" class="requirement-item">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            <span>At least 1 active referral required</span>
+                        </div>
+                        <div id="req-amount" class="requirement-item">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            <span>Minimum balance of Rs. 500</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let selectedMethod = 'EasyPaisa';
+        let userBalance = 0;
+        let referralCount = 0;
+
+        function selectMethod(method, element) {
+            selectedMethod = method;
+            document.querySelectorAll('.method-option').forEach(opt => opt.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function updateRequirementUI() {
+            const referralReq = document.getElementById('req-referral');
+            const amountReq = document.getElementById('req-amount');
+
+            if (referralCount >= 1) {
+                referralReq.classList.add('met');
+                referralReq.querySelector('i').className = 'fa-solid fa-circle-check';
+            } else {
+                referralReq.classList.remove('met');
+                referralReq.querySelector('i').className = 'fa-solid fa-circle-xmark';
+            }
+
+            if (userBalance >= 500) {
+                amountReq.classList.add('met');
+                amountReq.querySelector('i').className = 'fa-solid fa-circle-check';
+            } else {
+                amountReq.classList.remove('met');
+                amountReq.querySelector('i').className = 'fa-solid fa-circle-xmark';
+            }
+        }
+
+        async function loadWithdrawData() {
+            try {
+                const res = await fetch('/api/user/profile', { credentials: 'include' });
+                const user = await res.json();
+                
+                if (!res.ok) return window.location.href = '/index.html';
+                
+                userBalance = user.balance || 0;
+                referralCount = user.referralCount || 0;
+                
+                document.getElementById('user-display').innerText = user.username || user.email || 'User';
+                document.getElementById('balance-amount').innerText = `Rs. ${userBalance}`;
+                updateRequirementUI();
+            } catch (err) {
+                const display = document.getElementById('user-display');
+                if (display) display.innerText = 'User';
+            }
+        }
+
+        document.getElementById('withdraw-form').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const amount = parseInt(document.getElementById('amount').value);
+            const accNumber = document.getElementById('accNumber').value;
+            const accTitle = document.getElementById('accTitle').value;
+
+            if (amount < 500) {
+                window.showPopup && window.showPopup('Minimum withdrawal amount is Rs. 500', 'warning');
+                return;
+            }
+
+            if (userBalance < amount) {
+                window.showPopup && window.showPopup('Insufficient balance', 'error');
+                return;
+            }
+
+            if (referralCount < 1) {
+                window.showPopup && window.showPopup('You need at least 1 referral to withdraw funds.', 'warning');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/user/withdraw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        amount,
+                        accountNumber: accNumber,
+                        accountTitle: accTitle,
+                        method: selectedMethod
+                    })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    userBalance = data.balance || userBalance;
+                    document.getElementById('balance-amount').innerText = `Rs. ${userBalance}`;
+                    updateRequirementUI();
+                    window.showPopup && window.showPopup('Withdrawal request submitted successfully', 'success');
+                    document.getElementById('amount').value = '';
+                } else {
+                    if (res.status === 401) {
+                        window.showPopup && window.showPopup('Session expired, please login again.', 'warning');
+                        window.location.href = '/index.html';
+                        return;
+                    }
+                    window.showPopup && window.showPopup(data.message || 'Error submitting withdrawal', 'error');
+                }
+            } catch (err) {
+                window.showPopup && window.showPopup('Error submitting withdrawal', 'error');
+            }
+        };
+
+        window.onload = loadWithdrawData;
+    </script>
+</body>
+</html>

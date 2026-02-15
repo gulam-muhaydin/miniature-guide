@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EarnTube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --top-bar-height: 80px;
+            --sidebar-bg: #111114;
+            --sidebar-hover: rgba(255, 255, 255, 0.05);
+            --sidebar-active: rgba(255, 0, 3, 0.1);
+            --content-bg: #0a0a0b;
+        }
+
+        body {
+            background-color: var(--content-bg);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-header .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .sidebar-header .logo i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: var(--primary);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .btn-logout {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 62, 62, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            height: var(--top-bar-height);
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            background: var(--input-bg);
+            padding: 8px 16px;
+            border-radius: 100px;
+            border: 1px solid var(--card-border);
+        }
+
+        .content-container {
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Stats Cards Enhancements */
+        .stat-card {
+            background: linear-gradient(145deg, #151518 0%, #1c1c21 100%);
+            border: 1px solid var(--card-border);
+            padding: 30px;
+            border-radius: 24px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 0, 3, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-header h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .stat-header i {
+            font-size: 20px;
+            color: var(--primary);
+            opacity: 0.8;
+        }
+
+        .stat-card p {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        /* Video Section Enhancements */
+        .welcome-section {
+            margin-top: 40px;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(255, 0, 3, 0.1) 0%, rgba(21, 21, 24, 1) 100%);
+            border: 1px solid var(--card-border);
+            padding: 60px 40px;
+            border-radius: 32px;
+            text-align: center;
+        }
+
+        .welcome-card h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .welcome-card p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Info Card Enhancements */
+        .info-card {
+            background: rgba(255, 62, 62, 0.05);
+            border: 1px solid rgba(255, 62, 62, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .status-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-icon {
+            font-size: 32px;
+            color: var(--primary);
+            background: rgba(255, 62, 62, 0.1);
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+        }
+
+        .status-text h4 {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .status-text p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            :root {
+                --sidebar-width: 80px;
+            }
+            .nav-item span, .sidebar-header .logo span, .sidebar-footer span {
+                display: none;
+            }
+            .sidebar-header {
+                justify-content: center;
+                padding: 30px 0;
+            }
+            .sidebar-header .logo i {
+                margin-right: 0;
+            }
+            .nav-item {
+                justify-content: center;
+                padding: 15px;
+            }
+            .btn-logout {
+                justify-content: center;
+                padding: 15px;
+            }
+            .top-bar {
+                padding: 0 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .content-container {
+                padding: 20px;
+            }
+            .stat-card p {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo"><i class="fa-solid fa-play-circle"></i>Earn<span>Tube</span></span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="videos.html" class="nav-item">
+                    <i class="fa-solid fa-video"></i>
+                    <span>Videos</span>
+                </a>
+                <a href="withdraw.html" class="nav-item">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="referral.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Referral</span>
+                </a>
+                <a href="levels.html" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Levels</span>
+                </a>
+                <a href="/EarnTube.apk" class="nav-item" download="EarnTube.apk">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="user-profile">
+                    <i class="fa-solid fa-circle-user" style="color: var(--primary);"></i>
+                    <span id="user-display">Loading...</span>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <div id="status-message" class="info-card" style="display: none;">
+                    <div class="status-content">
+                        <div class="status-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div class="status-text">
+                            <h4>Verification Pending</h4>
+                            <p>Our team is reviewing your payment proof. You'll gain full access once approved.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="main-content" style="display: none;">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3>Available Balance</h3>
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                            <p id="balance">Rs. 0</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3>Active Plan</h3>
+                                <i class="fa-solid fa-gem"></i>
+                            </div>
+                            <p id="current-plan">None</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3>Daily Limit</h3>
+                                <i class="fa-solid fa-video"></i>
+                            </div>
+                            <p id="videos-left">0 Left</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3>Total Referrals</h3>
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <p id="total-referrals">0</p>
+                        </div>
+                    </div>
+
+                    <div class="welcome-section">
+                        <div class="welcome-card">
+                            <h2>Welcome to your Dashboard!</h2>
+                            <p>Track your earnings, manage your referrals, and grow your income with EarnTube.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        window.onload = checkUserStatus;
+    </script>
+</body>
+</html>

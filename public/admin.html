@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - EarnTube</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --bg: #030712;
+            --surface: #0f172a;
+            --surface-hover: #1e293b;
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --glass: rgba(15, 23, 42, 0.7);
+            --sidebar-width: 280px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            min-height: 100vh;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Glassmorphism Gate */
+        .gate-card {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .gate-header { text-align: center; margin-bottom: 32px; }
+        .title { font-size: 32px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--text-secondary); font-size: 14px; font-weight: 500; }
+
+        .input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+            outline: none;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .btn {
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn.primary {
+            width: 100%;
+            background: var(--accent);
+            color: #030712;
+            padding: 14px;
+            box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Modern Dashboard Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            gap: 32px;
+            align-items: start;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Sidebar Refinement */
+        .sidebar {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            position: sticky;
+            top: 24px;
+            height: calc(100vh - 48px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            margin-bottom: 32px;
+            padding: 0 12px;
+        }
+
+        .sidebar-brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .sidebar-link.active {
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .sidebar-count {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Main Panel & Sections */
+        .main-panel {
+            display: grid;
+            gap: 32px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-label { color: var(--text-secondary); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .section-header {
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-count {
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 2px 10px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Table Excellence */
+        .table-wrap {
+            padding: 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 24px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.01);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 24px;
+            font-size: 14px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Status & Action Buttons */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .status-approved { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-rejected { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .status-none { background: rgba(148, 163, 184, 0.1); color: var(--text-secondary); border: 1px solid rgba(148, 163, 184, 0.2); }
+
+        .btn-action-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-approve, .btn-reject, .btn-complete {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-approve {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-approve:hover {
+            background: var(--success);
+            color: #030712;
+            border-color: var(--success);
+        }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-reject:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .btn-complete {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-complete:hover {
+            background: var(--accent);
+            color: #030712;
+            border-color: var(--accent);
+        }
+
+        .error {
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+            padding: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        @media (max-width: 1200px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { 
+                position: static; 
+                height: auto; 
+                flex-direction: row; 
+                overflow-x: auto;
+                padding: 12px;
+                gap: 8px;
+            }
+            .sidebar-title, .sidebar-header { display: none; }
+            .sidebar-links { display: flex; gap: 8px; }
+            .sidebar-link { margin-bottom: 0; white-space: nowrap; }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 16px; }
+            .title { font-size: 24px; }
+            .section-header { padding: 16px; }
+            td, th { padding: 12px 16px; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container page">
+        <div id="admin-gate" class="gate-card">
+            <div class="gate-header">
+                <h2 class="title">Admin Access</h2>
+                <p class="subtitle">Enter password to continue</p>
+            </div>
+            <input type="password" id="admin-pass-input" class="input" placeholder="Password">
+            <button id="admin-pass-btn" class="btn primary">Login</button>
+            <div id="admin-pass-error" class="error">Wrong password</div>
+        </div>
+
+        <div id="admin-content" class="layout" style="display: none;">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-brand">EarnTube Admin</div>
+                </div>
+                
+                <div class="sidebar-title">Main Menu</div>
+                <div class="sidebar-links">
+                    <a class="sidebar-link active" data-view="dashboard">
+                        <span>Dashboard</span>
+                    </a>
+                    <a class="sidebar-link" data-view="payments">
+                        <span>Payment Requests</span>
+                        <span class="sidebar-count" id="count-pending-payments-side">0</span>
+                    </a>
+                    <a class="sidebar-link" data-view="withdrawals">
+                        <span>Withdrawal Requests</span>
+                        <span class="sidebar-count" id="count-pending-withdrawals-side">0</span>
+                    </a>
+                    <a class="sidebar-link" data-view="withdrawals-completed">
+                        <span>Completed Withdrawals</span>
+                        <span class="sidebar-count" id="count-completed-withdrawals-side">0</span>
+                    </a>
+                </div>
+
+                <div class="sidebar-title" style="margin-top: 24px;">Quick Actions</div>
+                <div class="sidebar-links">
+                    <a class="sidebar-link" onclick="loadAllData()">
+                        <span>Refresh Data</span>
+                    </a>
+                    <a class="sidebar-link" href="/EarnTube.apk" download="EarnTube.apk">
+                        <span>Download App</span>
+                    </a>
+                    <a class="sidebar-link" onclick="logoutAdmin()">
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </aside>
+
+            <div class="panel main-panel">
+                <!-- Dashboard View -->
+                <div id="view-dashboard" class="admin-view">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="title">Dashboard Overview</h2>
+                            <p class="subtitle">System-wide statistics and summary</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Total Users</span>
+                            <span class="stat-value" id="stat-total-users">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Pending Payments</span>
+                            <span class="stat-value" id="stat-pending-payments" style="color: var(--warning);">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Pending Withdrawals</span>
+                            <span class="stat-value" id="stat-pending-withdrawals" style="color: var(--accent);">0</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-header">
+                            <h3 class="section-title">Recent Activity</h3>
+                        </div>
+                        <div class="empty-state">
+                            Activity logging coming soon...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payments View -->
+                <div id="view-payments" class="admin-view" style="display: none;">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="title">Payment Management</h2>
+                            <p class="subtitle">Review and approve user plan payments</p>
+                        </div>
+                    </div>
+
+                    <div class="sections">
+                        <!-- New Requests Section -->
+                        <div class="section">
+                            <div class="section-header">
+                                <h3 class="section-title">New Payment Requests</h3>
+                                <span id="count-new" class="section-count">0</span>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Plan</th>
+                                            <th>Method</th>
+                                            <th>Transaction ID</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="list-new"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Approved Requests Section -->
+                        <div class="section" style="margin-top: 32px;">
+                            <div class="section-header">
+                                <h3 class="section-title">Approved Payments</h3>
+                                <span id="count-approved" class="section-count">0</span>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Plan</th>
+                                            <th>Method</th>
+                                            <th>Transaction ID</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="list-approved"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Rejected Requests Section -->
+                        <div class="section" style="margin-top: 32px;">
+                            <div class="section-header">
+                                <h3 class="section-title">Rejected Payments</h3>
+                                <span id="count-rejected" class="section-count">0</span>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Plan</th>
+                                            <th>Method</th>
+                                            <th>Transaction ID</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="list-rejected"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Withdrawals View -->
+                <div id="view-withdrawals" class="admin-view" style="display: none;">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="title">Withdrawal Management</h2>
+                            <p class="subtitle">Process user withdrawal requests</p>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-header">
+                            <h3 class="section-title">Pending Withdrawals</h3>
+                            <span id="count-withdrawals" class="section-count">0</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Account Info</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="list-withdrawals"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Withdrawals View -->
+                <div id="view-withdrawals-completed" class="admin-view" style="display: none;">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="title">Completed Withdrawals</h2>
+                            <p class="subtitle">Withdrawals marked completed/approved</p>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-header">
+                            <h3 class="section-title">Completed Withdrawals</h3>
+                            <span id="count-withdrawals-completed" class="section-count">0</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Account Info</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="list-withdrawals-completed"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getPopupContainer() {
+            let container = document.getElementById('popup-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'popup-container';
+                container.className = 'popup-container';
+                document.body.appendChild(container);
+            }
+            return container;
+        }
+
+        function showPopup(message, type = 'info', duration = 2500) {
+            if (!message) return;
+            const container = getPopupContainer();
+            const popup = document.createElement('div');
+            popup.className = `popup popup-${type}`;
+            popup.setAttribute('role', 'alert');
+            popup.textContent = message;
+            container.appendChild(popup);
+            requestAnimationFrame(() => popup.classList.add('show'));
+            const removePopup = () => {
+                popup.classList.remove('show');
+                setTimeout(() => popup.remove(), 200);
+            };
+            setTimeout(removePopup, duration);
+        }
+        const ADMIN_PASS = '2272';
+        const ADMIN_UNLOCK_KEY = 'admin_unlocked';
+        const gate = document.getElementById('admin-gate');
+        const content = document.getElementById('admin-content');
+        const passInput = document.getElementById('admin-pass-input');
+        const passBtn = document.getElementById('admin-pass-btn');
+        const passError = document.getElementById('admin-pass-error');
+
+        function unlockAdmin() {
+            gate.style.display = 'none';
+            content.style.display = 'grid';
+            loadAllData();
+        }
+
+        function loadAllData() {
+            loadPending();
+            loadWithdrawals();
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem(ADMIN_UNLOCK_KEY);
+            window.location.reload();
+        }
+
+        function checkAdminAccess() {
+            if (sessionStorage.getItem(ADMIN_UNLOCK_KEY) === 'true') {
+                unlockAdmin();
+                return;
+            }
+            passBtn.onclick = () => {
+                if (passInput.value === ADMIN_PASS) {
+                    sessionStorage.setItem(ADMIN_UNLOCK_KEY, 'true');
+                    passError.style.display = 'none';
+                    unlockAdmin();
+                } else {
+                    passError.style.display = 'block';
+                }
+            };
+        }
+
+        async function loadPending() {
+            try {
+                const res = await fetch('/api/admin/list-pending', {
+                    credentials: 'include'
+                });
+                const users = await res.json();
+                const listNew = document.getElementById('list-new');
+                const listApproved = document.getElementById('list-approved');
+                const listRejected = document.getElementById('list-rejected');
+                const countNew = document.getElementById('count-new');
+                const countApproved = document.getElementById('count-approved');
+                const countRejected = document.getElementById('count-rejected');
+                const countPendingSide = document.getElementById('count-pending-payments-side');
+                
+                listNew.innerHTML = '';
+                listApproved.innerHTML = '';
+                listRejected.innerHTML = '';
+
+                if (!res.ok || !Array.isArray(users)) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="6" class="empty-state">Unable to load payment requests</td>`;
+                    listNew.appendChild(tr);
+                    return;
+                }
+
+                document.getElementById('stat-total-users').textContent = String(users.length);
+
+                const newItems = [];
+                const approvedItems = [];
+                const rejectedItems = [];
+
+                users.forEach(user => {
+                    const status = user.paymentProof?.status || 'none';
+                    if (status === 'approved') {
+                        approvedItems.push(user);
+                        return;
+                    }
+                    if (status === 'rejected') {
+                        rejectedItems.push(user);
+                        return;
+                    }
+                    newItems.push(user);
+                });
+
+                countNew.textContent = String(newItems.length);
+                countApproved.textContent = String(approvedItems.length);
+                countRejected.textContent = String(rejectedItems.length);
+                countPendingSide.textContent = String(newItems.length);
+                
+                document.getElementById('stat-pending-payments').textContent = String(newItems.length);
+
+                const renderRows = (items, targetList, isNew = false) => {
+                    if (items.length === 0) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td colspan="${isNew ? 6 : 5}" class="empty-state">No requests in this category</td>`;
+                        targetList.appendChild(tr);
+                        return;
+                    }
+                    items.forEach(user => {
+                        const userId = user._id || user.id;
+                        const status = user.paymentProof?.status || 'none';
+                        const method = user.paymentProof?.method || '-';
+                        const transactionId = user.paymentProof?.transactionId || '-';
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${user.username}</td>
+                            <td>${user.plan}</td>
+                            <td>${method}</td>
+                            <td>${transactionId}</td>
+                            <td><span class="status-pill status-${status}">${status}</span></td>
+                            ${isNew ? `
+                            <td>
+                                <div class="btn-action-group">
+                                    <button class="btn-approve" onclick="updateStatus('${userId}', 'approved')">Approve</button>
+                                    <button class="btn-reject" onclick="updateStatus('${userId}', 'rejected')">Reject</button>
+                                </div>
+                            </td>` : ''}
+                        `;
+                        targetList.appendChild(tr);
+                    });
+                };
+
+                renderRows(newItems, listNew, true);
+                renderRows(approvedItems, listApproved);
+                renderRows(rejectedItems, listRejected);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadWithdrawals() {
+            try {
+                const res = await fetch('/api/admin/withdrawals', {
+                    credentials: 'include'
+                });
+                const raw = await res.json();
+                const withdrawals = Array.isArray(raw)
+                    ? raw
+                    : (Array.isArray(raw?.withdrawals)
+                        ? raw.withdrawals
+                        : (Array.isArray(raw?.value) ? raw.value : []));
+                const list = document.getElementById('list-withdrawals');
+                const count = document.getElementById('count-withdrawals');
+                const countSide = document.getElementById('count-pending-withdrawals-side');
+                const countCompletedSide = document.getElementById('count-completed-withdrawals-side');
+                list.innerHTML = '';
+
+                if (!res.ok || !Array.isArray(withdrawals)) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="7" class="empty-state">Unable to load withdrawal requests</td>`;
+                    list.appendChild(tr);
+                    return;
+                }
+
+                const pendingWithdrawals = withdrawals.filter(w => w.status === 'pending');
+                const completedWithdrawals = withdrawals.filter(w => w.status === 'completed' || w.status === 'approved');
+                count.textContent = String(pendingWithdrawals.length);
+                countSide.textContent = String(pendingWithdrawals.length);
+                if (countCompletedSide) countCompletedSide.textContent = String(completedWithdrawals.length);
+                document.getElementById('stat-pending-withdrawals').textContent = String(pendingWithdrawals.length);
+
+                if (pendingWithdrawals.length === 0) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="7" class="empty-state">No pending withdrawal requests</td>`;
+                    list.appendChild(tr);
+                    return;
+                }
+
+                pendingWithdrawals.forEach((item) => {
+                    const status = item.status || 'pending';
+                    const dateText = item.createdAt ? new Date(item.createdAt).toLocaleString() : '-';
+                    const canComplete = status === 'pending' && item.userId && item.createdAt;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.username}</td>
+                        <td style="font-weight: 700; color: var(--accent);">Rs. ${item.amount}</td>
+                        <td>${item.method || '-'}</td>
+                        <td>
+                            <div style="font-size: 13px;">${item.accountTitle || '-'}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">${item.accountNumber || '-'}</div>
+                        </td>
+                        <td><span class="status-pill status-${status}">${status}</span></td>
+                        <td style="font-size: 12px; color: var(--text-secondary);">${dateText}</td>
+                        <td>
+                            ${canComplete ? `
+                              <div class="btn-action-group">
+                                <button class="btn-complete" onclick="updateWithdrawal('${item.userId}', '${item.createdAt}', 'completed')">Complete</button>
+                              </div>
+                            ` : '-'}
+                        </td>
+                    `;
+                    list.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadCompletedWithdrawals() {
+            try {
+                const res = await fetch('/api/admin/withdrawals', {
+                    credentials: 'include'
+                });
+                const raw = await res.json();
+                const withdrawals = Array.isArray(raw)
+                    ? raw
+                    : (Array.isArray(raw?.withdrawals)
+                        ? raw.withdrawals
+                        : (Array.isArray(raw?.value) ? raw.value : []));
+
+                const list = document.getElementById('list-withdrawals-completed');
+                const count = document.getElementById('count-withdrawals-completed');
+                const countCompletedSide = document.getElementById('count-completed-withdrawals-side');
+                list.innerHTML = '';
+
+                if (!res.ok || !Array.isArray(withdrawals)) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="6" class="empty-state">Unable to load completed withdrawals</td>`;
+                    list.appendChild(tr);
+                    return;
+                }
+
+                const completed = withdrawals.filter(w => w.status === 'completed' || w.status === 'approved');
+                count.textContent = String(completed.length);
+                if (countCompletedSide) countCompletedSide.textContent = String(completed.length);
+
+                if (completed.length === 0) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="6" class="empty-state">No completed withdrawals</td>`;
+                    list.appendChild(tr);
+                    return;
+                }
+
+                completed.forEach((item) => {
+                    const status = item.status || 'completed';
+                    const dateText = item.createdAt ? new Date(item.createdAt).toLocaleString() : '-';
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.username}</td>
+                        <td style="font-weight: 700; color: var(--accent);">Rs. ${item.amount}</td>
+                        <td>${item.method || '-'}</td>
+                        <td>
+                            <div style="font-size: 13px;">${item.accountTitle || '-'}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">${item.accountNumber || '-'}</div>
+                        </td>
+                        <td><span class="status-pill status-${status}">${status}</span></td>
+                        <td style="font-size: 12px; color: var(--text-secondary);">${dateText}</td>
+                    `;
+                    list.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function updateWithdrawal(userId, createdAt, status) {
+            const res = await fetch('/api/admin/withdrawals-update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ userId, createdAt, status })
+            });
+            if (res.ok) {
+                showPopup('Withdrawal updated', 'success');
+                loadWithdrawals();
+                return;
+            }
+            const data = await res.json().catch(() => ({}));
+            showPopup(data.message || 'Unable to update withdrawal', 'error');
+        }
+
+        async function updateStatus(userId, status) {
+            const res = await fetch('/api/admin/approve', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ userId, status })
+            });
+            if (res.ok) {
+                showPopup('Updated successfully', 'success');
+                loadAllData();
+                return;
+            }
+            const data = await res.json().catch(() => ({}));
+            showPopup(data.message || 'Unable to update', 'error');
+        }
+
+        function applyView(viewId) {
+            const views = document.querySelectorAll('.admin-view');
+            views.forEach(view => {
+                view.style.display = view.id === `view-${viewId}` ? 'block' : 'none';
+            });
+            const links = document.querySelectorAll('.sidebar-link');
+            links.forEach(link => {
+                if (link.dataset.view) {
+                    link.classList.toggle('active', link.dataset.view === viewId);
+                }
+            });
+
+            if (sessionStorage.getItem(ADMIN_UNLOCK_KEY) === 'true') {
+                if (viewId === 'withdrawals') loadWithdrawals();
+                if (viewId === 'withdrawals-completed') loadCompletedWithdrawals();
+                if (viewId === 'payments') loadPending();
+            }
+        }
+
+        function initSidebar() {
+            const links = document.querySelectorAll('.sidebar-link');
+            links.forEach(link => {
+                if (link.dataset.view) {
+                    link.onclick = () => applyView(link.dataset.view);
+                }
+            });
+            applyView('dashboard');
+        }
+
+        window.onload = () => {
+            checkAdminAccess();
+            initSidebar();
+        };
+    </script>
+</body>
+</html>

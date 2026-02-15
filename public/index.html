@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EarnTube - Premium Watch & Earn</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-page">
+        <!-- Visual Section -->
+        <div class="auth-visual">
+            <div class="auth-visual-content">
+                <div class="brand-badge"><i class="fa-solid fa-play-circle"></i> EarnTube Official</div>
+                <h1>Watch. Earn. <span>Repeat.</span></h1>
+                <p>Join the world's most rewarding video community. Turn your screen time into actual earnings with our premium partnership network.</p>
+                <div class="visual-features">
+                    <div class="v-feature"><i class="fa-solid fa-bolt"></i> Instant Payouts</div>
+                    <div class="v-feature"><i class="fa-solid fa-shield-check"></i> Secure Platform</div>
+                    <div class="v-feature"><i class="fa-solid fa-user-group"></i> 50k+ Members</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="auth-form-container">
+            <div class="auth-header">
+                <h2 id="auth-title">Welcome Back</h2>
+                <p id="auth-subtitle">Enter your credentials to access your account</p>
+            </div>
+            
+            <form id="auth-form">
+                <div class="input-group" id="username-group" style="display: none;">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="johndoe">
+                </div>
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" id="auth-btn">Sign In</button>
+            </form>
+            
+            <p id="auth-toggle">New to EarnTube? <span onclick="toggleAuth()">Create an account</span></p>
+            <a href="/EarnTube.apk" class="download-btn full" download="EarnTube.apk">
+                <i class="fa-solid fa-download"></i>
+                Download App
+            </a>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

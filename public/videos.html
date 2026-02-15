@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videos - EarnTube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --top-bar-height: 80px;
+            --sidebar-bg: #111114;
+            --sidebar-hover: rgba(255, 255, 255, 0.05);
+            --sidebar-active: rgba(255, 0, 3, 0.1);
+            --content-bg: #0a0a0b;
+        }
+
+        body {
+            background-color: var(--content-bg);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-header .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .sidebar-header .logo i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: var(--primary);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            height: var(--top-bar-height);
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            background: var(--input-bg);
+            padding: 8px 16px;
+            border-radius: 100px;
+            border: 1px solid var(--card-border);
+        }
+
+        .content-container {
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .video-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .video-thumbnail {
+            aspect-ratio: 16/9;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .video-thumbnail i {
+            font-size: 50px;
+            color: #fff;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .video-card:hover .video-thumbnail i {
+            transform: scale(1.2);
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-info h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .video-pay {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .video-duration {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            padding: 20px 30px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+        }
+
+        .limit-badge {
+            background: rgba(255, 0, 3, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo"><i class="fa-solid fa-play-circle"></i>Earn<span>Tube</span></span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="videos.html" class="nav-item active">
+                    <i class="fa-solid fa-video"></i>
+                    <span>Videos</span>
+                </a>
+                <a href="withdraw.html" class="nav-item">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="referral.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Referral</span>
+                </a>
+                <a href="levels.html" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Levels</span>
+                </a>
+                <a href="/EarnTube.apk" class="nav-item" download="EarnTube.apk">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="user-profile">
+                    <i class="fa-solid fa-circle-user" style="color: var(--primary);"></i>
+                    <span id="user-display">Loading...</span>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <div class="stats-header">
+                    <div>
+                        <h2 style="margin-bottom: 4px;">Watch Videos</h2>
+                        <p style="color: var(--text-muted);">Watch videos and earn rewards based on your plan.</p>
+                    </div>
+                    <div id="limit-container" class="limit-badge">
+                        Loading Limit...
+                    </div>
+                </div>
+
+                <div id="video-grid" class="video-grid">
+                    <!-- Videos will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="video-modal" class="modal">
+        <div class="modal-content">
+            <div class="video-placeholder">
+                <i class="fa-solid fa-play"></i>
+                <p>Watching Earning Video...</p>
+            </div>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="timer-text" class="timer-text">30s</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const planConfig = {
+            'basic': { limit: 5, pay: 20 },
+            'silver': { limit: 10, pay: 25 },
+            'premium': { limit: 15, pay: 30 },
+            'gold': { limit: 25, pay: 40 },
+            'diamond': { limit: 50, pay: 50 },
+            'platinum': { limit: 80, pay: 65 },
+            'emerald': { limit: 120, pay: 100 },
+            'sapphire': { limit: 200, pay: 150 },
+            'ruby': { limit: 999999, pay: 200 }
+        };
+
+        let isWatching = false;
+
+        async function loadVideos() {
+            try {
+                const res = await fetch('/api/user/profile', { credentials: 'include' });
+                const user = await res.json();
+                
+                if (!res.ok) return window.location.href = '/index.html';
+                
+                document.getElementById('user-display').innerText = user.username;
+                
+                const videosLeft = user.videosLeft;
+                document.getElementById('limit-container').innerText = `Daily Limit: ${videosLeft} Left`;
+
+                const planKey = (user.plan || 'none').toString().trim().toLowerCase();
+                const config = planConfig[planKey] || { limit: 0, pay: 0 };
+                const grid = document.getElementById('video-grid');
+                grid.innerHTML = '';
+
+                // Show 6 placeholder cards for videos
+                for (let i = 1; i <= 6; i++) {
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    card.innerHTML = `
+                        <div class="video-thumbnail" onclick="handleWatchVideo()">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                        <div class="video-info">
+                            <h3>Earning Video #${i}</h3>
+                            <div class="video-meta">
+                                <span class="video-pay">Rs. ${config.pay}.00</span>
+                                <span class="video-duration">30 Seconds</span>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function handleWatchVideo() {
+            if (isWatching) return;
+
+            // Check limit first from profile
+            const res = await fetch('/api/user/profile', { credentials: 'include' });
+            const user = await res.json();
+            if (user.videosLeft <= 0) {
+                window.showPopup && window.showPopup('Your daily video limit has been reached!', 'warning');
+                return;
+            }
+
+            isWatching = true;
+            const modal = document.getElementById('video-modal');
+            const bar = document.getElementById('progress-bar');
+            const timerText = document.getElementById('timer-text');
+            
+            modal.style.display = 'flex';
+            let timeLeft = 30;
+            bar.style.width = '0%';
+            timerText.innerText = `${timeLeft}s`;
+
+            const interval = setInterval(() => {
+                timeLeft--;
+                const progress = ((30 - timeLeft) / 30) * 100;
+                bar.style.width = `${progress}%`;
+                timerText.innerText = `${timeLeft}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    finishWatching();
+                }
+            }, 1000);
+        }
+
+        async function finishWatching() {
+            try {
+                const res = await fetch('/api/user/watch-video', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    window.showPopup && window.showPopup(`Success! Earning added. New Balance: Rs. ${data.balance}`, 'success');
+                    window.location.reload();
+                } else {
+                    window.showPopup && window.showPopup(data.message || 'Error adding balance', 'error');
+                    document.getElementById('video-modal').style.display = 'none';
+                    isWatching = false;
+                }
+            } catch (err) {
+                console.error(err);
+                window.showPopup && window.showPopup('Something went wrong', 'error');
+                document.getElementById('video-modal').style.display = 'none';
+                isWatching = false;
+            }
+        }
+
+        window.onload = loadVideos;
+    </script>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+        .video-placeholder {
+            width: 100%;
+            height: 200px;
+            background: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            color: #ff3e3e;
+        }
+        .video-placeholder i { font-size: 3rem; margin-bottom: 1rem; }
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, #ff3e3e, #ff8e3e);
+            transition: width 0.3s;
+        }
+        .timer-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</body>
+</html>

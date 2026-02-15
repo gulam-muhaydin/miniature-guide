@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Plan - EarnTube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <span class="logo">Earn<span>Tube</span></span>
+            <a href="/EarnTube.apk" class="download-btn" download="EarnTube.apk">
+                <i class="fa-solid fa-download"></i>
+                Download
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div style="width: 100%;">
+            <div class="auth-header" style="margin-bottom: 48px;">
+                <h2 style="font-size: 40px;">Choose Your Journey</h2>
+                <p>Select a plan that fits your earning goals</p>
+            </div>
+            
+            <div class="plans-grid">
+                <!-- Basic -->
+                <div class="plan-card">
+                    <div class="plan-badge">Entry Level</div>
+                    <div class="plan-header">
+                        <h3>Basic</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">500</span>
+                        </div>
+                        <p class="plan-tagline">Perfect for getting started</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 5 Videos daily</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 20 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Standard Support</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 30 Days Validity</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('basic', 500)">Choose Basic</button>
+                </div>
+
+                <!-- Silver -->
+                <div class="plan-card">
+                    <div class="plan-badge">Popular</div>
+                    <div class="plan-header">
+                        <h3>Silver</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">1,000</span>
+                        </div>
+                        <p class="plan-tagline">Enhanced earning potential</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 10 Videos daily</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 25 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Priority Support</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 30 Days Validity</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('silver', 1000)">Choose Silver</button>
+                </div>
+                
+                <!-- Premium -->
+                <div class="plan-card highlight">
+                    <div class="plan-badge">Best Value</div>
+                    <div class="plan-header">
+                        <h3>Premium</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">1,500</span>
+                        </div>
+                        <p class="plan-tagline">Maximum ROI for power users</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 15 Videos daily</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 30 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 24/7 VIP Support</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 30 Days Validity</li>
+                    </ul>
+                    <button class="plan-btn btn-primary" onclick="selectPlan('premium', 1500)">Go Premium</button>
+                </div>
+
+                <!-- Gold -->
+                <div class="plan-card">
+                    <div class="plan-badge">Elite</div>
+                    <div class="plan-header">
+                        <h3>Gold</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">2,500</span>
+                        </div>
+                        <p class="plan-tagline">For the dedicated professional</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 25 Videos daily</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 40 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Personal Manager</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 45 Days Validity</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('gold', 2500)">Choose Gold</button>
+                </div>
+
+                <!-- Diamond -->
+                <div class="plan-card">
+                    <div class="plan-badge">Ultimate</div>
+                    <div class="plan-header">
+                        <h3>Diamond</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">5,000</span>
+                        </div>
+                        <p class="plan-tagline">Unrestricted earning power</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 50 Videos daily</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 50 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Instant Withdrawals</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 60 Days Validity</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('diamond', 5000)">Choose Diamond</button>
+                </div>
+
+                <!-- Platinum -->
+                <div class="plan-card">
+                    <div class="plan-badge">Prestige</div>
+                    <div class="plan-header">
+                        <h3>Platinum</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">10,000</span>
+                        </div>
+                        <p class="plan-tagline">Professional grade returns</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 80 Videos daily</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 65 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Dedicated Support</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 90 Days Validity</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('platinum', 10000)">Choose Platinum</button>
+                </div>
+
+                <!-- Emerald -->
+                <div class="plan-card">
+                    <div class="plan-badge">Master</div>
+                    <div class="plan-header">
+                        <h3>Emerald</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">30,000</span>
+                        </div>
+                        <p class="plan-tagline">Elite investment tier</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 120 Videos daily</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 100 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Direct Line Support</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 120 Days Validity</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('emerald', 30000)">Choose Emerald</button>
+                </div>
+
+                <!-- Sapphire -->
+                <div class="plan-card">
+                    <div class="plan-badge">Grandmaster</div>
+                    <div class="plan-header">
+                        <h3>Sapphire</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">60,000</span>
+                        </div>
+                        <p class="plan-tagline">Maximum wealth generation</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 200 Videos daily</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 150 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> VIP Concierge</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> 180 Days Validity</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('sapphire', 60000)">Choose Sapphire</button>
+                </div>
+
+                <!-- Ruby -->
+                <div class="plan-card">
+                    <div class="plan-badge">Apex</div>
+                    <div class="plan-header">
+                        <h3>Ruby</h3>
+                        <div class="price">
+                            <span class="currency">Rs.</span>
+                            <span class="amount">100,000</span>
+                        </div>
+                        <p class="plan-tagline">The pinnacle of EarnTube</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Unlimited Videos</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Rs. 200 per video</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Executive Partnership</li>
+                        <li><i class="fa-solid fa-circle-check feature-icon"></i> Lifetime Validity</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('ruby', 100000)">Choose Ruby</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        fetch('/api/user/profile', { credentials: 'include' })
+            .then(res => res.ok ? res.json() : null)
+            .then(user => {
+                if (!user) return;
+                if (user.paymentProof && user.paymentProof.status === 'pending') {
+                    window.location.href = '/waiting.html';
+                } else if (user.isApproved) {
+                    window.location.href = '/dashboard.html';
+                }
+            })
+            .catch(() => {});
+    </script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Levels - EarnTube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --top-bar-height: 80px;
+            --sidebar-bg: #111114;
+            --sidebar-hover: rgba(255, 255, 255, 0.05);
+            --sidebar-active: rgba(255, 0, 3, 0.1);
+            --content-bg: #0a0a0b;
+        }
+
+        body {
+            background-color: var(--content-bg);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .sidebar-header { padding: 30px; display: flex; align-items: center; }
+        .sidebar-header .logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+        .sidebar-header .logo i { color: var(--primary); margin-right: 10px; }
+        .sidebar-nav { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 500; }
+        .nav-item i { font-size: 20px; width: 24px; text-align: center; }
+        .nav-item:hover { background: var(--sidebar-hover); color: var(--text-main); }
+        .nav-item.active { background: var(--sidebar-active); color: var(--primary); }
+        .sidebar-footer { padding: 20px; border-top: 1px solid var(--card-border); }
+        .btn-logout { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 20px; background: transparent; border: 1px solid var(--card-border); color: var(--text-muted); border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 500; }
+
+        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-height: 100vh; }
+        .top-bar { height: var(--top-bar-height); background: rgba(10, 10, 11, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: flex-end; padding: 0 40px; position: sticky; top: 0; z-index: 900; }
+        .user-profile { display: flex; align-items: center; gap: 12px; font-weight: 600; color: var(--text-main); background: var(--input-bg); padding: 8px 16px; border-radius: 100px; border: 1px solid var(--card-border); }
+        .content-container { padding: 40px; max-width: 1200px; width: 100%; margin: 0 auto; }
+
+        /* Levels Page Specific */
+        .level-progress-card {
+            background: linear-gradient(145deg, #151518 0%, #1c1c21 100%);
+            border: 1px solid var(--card-border);
+            padding: 40px;
+            border-radius: 24px;
+            margin-bottom: 30px;
+        }
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .level-info h2 { font-size: 28px; margin-bottom: 5px; color: #fff; }
+        .level-info p { color: var(--text-muted); }
+        .level-badge {
+            background: var(--sidebar-active);
+            color: var(--primary);
+            padding: 10px 20px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 18px;
+            border: 1px solid var(--primary);
+        }
+
+        .progress-track {
+            height: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 100px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), #ff8e3e);
+            width: 0%;
+            transition: 1s ease-out;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .level-card {
+            background: #151518;
+            border: 1px solid var(--card-border);
+            padding: 25px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+        .level-card.active {
+            opacity: 1;
+            border-color: var(--primary);
+            background: rgba(255, 0, 3, 0.02);
+        }
+        .level-card.active::before {
+            content: 'Current Level';
+            position: absolute;
+            top: 10px;
+            right: -30px;
+            background: var(--primary);
+            color: white;
+            font-size: 10px;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-weight: 700;
+        }
+        .level-card h4 { font-size: 18px; margin-bottom: 15px; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .level-card ul { list-style: none; padding: 0; margin: 0; }
+        .level-card li { color: var(--text-muted); font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .level-card li i { color: var(--success); font-size: 12px; }
+        .level-card.locked li i { color: var(--text-muted); }
+
+        @media (max-width: 900px) {
+            .content-container {
+                padding: 16px;
+            }
+
+            .level-progress-card {
+                padding: 20px;
+                border-radius: 18px;
+            }
+
+            .level-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .level-info h2 {
+                font-size: 22px;
+            }
+
+            .level-badge {
+                font-size: 14px;
+                padding: 8px 14px;
+            }
+
+            .progress-labels {
+                flex-direction: column;
+                gap: 6px;
+                font-size: 13px;
+            }
+
+            .levels-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .level-card {
+                padding: 18px;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo"><i class="fa-solid fa-play-circle"></i>Earn<span>Tube</span></span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="videos.html" class="nav-item">
+                    <i class="fa-solid fa-video"></i>
+                    <span>Videos</span>
+                </a>
+                <a href="withdraw.html" class="nav-item">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="referral.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Referral</span>
+                </a>
+                <a href="levels.html" class="nav-item active">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Levels</span>
+                </a>
+                <a href="/EarnTube.apk" class="nav-item" download="EarnTube.apk">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="user-profile">
+                    <i class="fa-solid fa-circle-user" style="color: var(--primary);"></i>
+                    <span id="user-display">Loading...</span>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <div class="level-progress-card">
+                    <div class="level-header">
+                        <div class="level-info">
+                            <h2 id="current-level-name">Newbie (Level 1)</h2>
+                            <p>Complete tasks to level up and unlock better rewards.</p>
+                        </div>
+                        <div class="level-badge" id="level-badge">LVL 1</div>
+                    </div>
+
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span id="progress-start">0 Referrals</span>
+                        <span id="progress-end">Next Level: 5 Referrals</span>
+                    </div>
+                </div>
+
+                <div class="levels-grid">
+                    <div class="level-card active" id="lvl-1">
+                        <h4><i class="fa-solid fa-star"></i> Level 1 (Newbie)</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-check"></i> Standard Video Earnings</li>
+                            <li><i class="fa-solid fa-check"></i> Basic Withdrawal Support</li>
+                            <li><i class="fa-solid fa-check"></i> 1 Referral Needed for Withdraw</li>
+                        </ul>
+                    </div>
+                    <div class="level-card" id="lvl-2">
+                        <h4><i class="fa-solid fa-crown"></i> Level 2 (Pro)</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-lock"></i> 10% Extra Video Earning</li>
+                            <li><i class="fa-solid fa-lock"></i> Faster Withdrawals</li>
+                            <li><i class="fa-solid fa-lock"></i> 5 Referrals Needed</li>
+                        </ul>
+                    </div>
+                    <div class="level-card" id="lvl-3">
+                        <h4><i class="fa-solid fa-gem"></i> Level 3 (Expert)</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-lock"></i> 25% Extra Video Earning</li>
+                            <li><i class="fa-solid fa-lock"></i> Priority Support</li>
+                            <li><i class="fa-solid fa-lock"></i> 15 Referrals Needed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        async function loadLevelData() {
+            try {
+                const res = await fetch('/api/user/profile');
+                const user = await res.json();
+                
+                if (!res.ok) return window.location.href = '/index.html';
+                
+                document.getElementById('user-display').innerText = user.username;
+                
+                const referrals = user.referralCount || 0;
+                let currentLvl = 1;
+                let nextLvlRefs = 5;
+                let lvlName = "Newbie (Level 1)";
+                
+                if (referrals >= 15) {
+                    currentLvl = 3;
+                    nextLvlRefs = 50;
+                    lvlName = "Expert (Level 3)";
+                    document.getElementById('lvl-3').classList.add('active');
+                    document.getElementById('lvl-2').classList.add('active');
+                } else if (referrals >= 5) {
+                    currentLvl = 2;
+                    nextLvlRefs = 15;
+                    lvlName = "Pro (Level 2)";
+                    document.getElementById('lvl-2').classList.add('active');
+                    document.getElementById('lvl-1').classList.remove('active'); // active means HIGHLIGHTED current
+                }
+
+                // UI Updates
+                document.getElementById('current-level-name').innerText = lvlName;
+                document.getElementById('level-badge').innerText = `LVL ${currentLvl}`;
+                
+                const progress = Math.min((referrals / nextLvlRefs) * 100, 100);
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+                document.getElementById('progress-start').innerText = `${referrals} Referrals`;
+                document.getElementById('progress-end').innerText = `Next Level: ${nextLvlRefs} Referrals`;
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.onload = loadLevelData;
+    </script>
+</body>
+</html>

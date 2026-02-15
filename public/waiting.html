@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waiting for Approval - EarnTube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .waiting-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg-main);
+        }
+        .waiting-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 62, 62, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .waiting-card h2 {
+            margin-bottom: 16px;
+            font-size: 28px;
+            color: var(--text-main);
+        }
+        .waiting-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        .refresh-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 62, 62, 0.3);
+        }
+        .support-link {
+            display: block;
+            margin-top: 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .support-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="waiting-container">
+        <div class="waiting-card">
+            <div class="status-icon">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            <h2>Verification Pending</h2>
+            <p>Thank you for submitting your payment proof! Our team is currently reviewing your transaction. This process usually takes 1-2 hours during business hours.</p>
+            
+            <button onclick="checkStatus()" class="refresh-btn">
+                <i class="fa-solid fa-rotate"></i> Check Status
+            </button>
+
+            <a href="#" class="support-link">Need help? Contact Support</a>
+            <a href="/EarnTube.apk" class="download-btn full" download="EarnTube.apk">
+                <i class="fa-solid fa-download"></i>
+                Download App
+            </a>
+            
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--card-border);">
+            <button onclick="logout()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign out
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        window.onload = checkStatus;
+
+        async function checkStatus() {
+            const btn = document.querySelector('.refresh-btn');
+            const icon = btn.querySelector('i');
+            icon.classList.add('fa-spin');
+            
+            try {
+                // We'll use the existing checkUserStatus logic from script.js
+                // which handles redirection based on plan/payment status
+                await checkUserStatus();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setTimeout(() => icon.classList.remove('fa-spin'), 1000);
+            }
+        }
+
+        // Auto check every 30 seconds
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>

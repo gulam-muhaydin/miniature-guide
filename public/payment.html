@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Payment - EarnTube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <span class="logo">Earn<span>Tube</span></span>
+            <a href="/EarnTube.apk" class="download-btn" download="EarnTube.apk">
+                <i class="fa-solid fa-download"></i>
+                Download
+            </a>
+        </div>
+    </nav>
+
+    <div class="payment-page">
+        <div class="container">
+            <div class="payment-wrapper">
+                <!-- Left Column: Summary & Instructions -->
+                <div class="payment-info-section">
+                    <div class="order-summary-card">
+                        <div class="badge-premium">Checkout</div>
+                        <h2>Order Summary</h2>
+                        <div class="summary-details">
+                            <div class="summary-item">
+                                <span>Selected Plan</span>
+                                <span id="display-plan-name" class="highlight-text">Loading...</span>
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div class="summary-total">
+                                <span>Total Amount</span>
+                                <span class="total-price">Rs. <span id="display-plan-price">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-methods-card">
+                        <h3>Transfer Methods</h3>
+                        <p class="method-hint">Send exact amount to one of the accounts below</p>
+                        
+                        <div class="methods-list">
+                            <div class="method-item">
+                                <div class="method-logo-wrapper">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIineXs3mUB_3M1xPlnYOrgQnnacDKll9Jtg&s" alt="JazzCash" class="method-logo">
+                                </div>
+                                <div class="method-details">
+                                    <span class="method-name">JazzCash</span>
+                                    <span class="method-acc">0310-7654321</span>
+                                    <span class="method-holder">EarnTube Official</span>
+                                </div>
+                                <button class="copy-btn" onclick="copyText('0310-7654321')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Verification Form -->
+                <div class="payment-form-section">
+                    <div class="form-header">
+                        <h2>Verify Payment</h2>
+                        <p>Upload your transaction details for instant approval</p>
+                    </div>
+
+                    <form id="payment-form" class="premium-form">
+                        <div class="input-group">
+                            <label>Transaction ID (TID)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-hashtag input-icon"></i>
+                                <input type="text" id="transactionId" placeholder="Enter 11-digit Transaction ID" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Your Account Number</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-mobile-screen input-icon"></i>
+                                <input type="text" id="senderNumber" placeholder="Number you paid from" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Proof of Payment</label>
+                            <div class="upload-area" id="upload-zone">
+                                <input type="file" id="paymentProof" accept="image/*" hidden>
+                                <div class="upload-placeholder">
+                                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                                    <p>Click or drag screenshot here</p>
+                                    <span class="file-limit">JPG, PNG (Max 2MB)</span>
+                                </div>
+                                <div id="file-preview" class="file-preview hidden"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn-premium">
+                            <span class="btn-text">Submit Verification</span>
+                            <div class="btn-loader hidden"></div>
+                        </button>
+
+                        <div class="security-note">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <p>Secured end-to-end payment verification</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const selectedPlan = params.get('plan');
+        const planPrice = params.get('price');
+        if (!selectedPlan || !planPrice) {
+            window.location.href = '/plans.html';
+        } else {
+            document.getElementById('display-plan-name').textContent = selectedPlan;
+            document.getElementById('display-plan-price').textContent = planPrice;
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                if (window.showPopup) {
+                    window.showPopup('Account number copied to clipboard!', 'success');
+                }
+            });
+        }
+
+        // Handle file upload preview
+        const uploadZone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('paymentProof');
+        const previewDiv = document.getElementById('file-preview');
+
+        uploadZone.onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewDiv.innerHTML = `<img src="${event.target.result}" style="max-width: 100%; border-radius: 8px;">`;
+                    previewDiv.classList.remove('hidden');
+                    uploadZone.querySelector('.upload-placeholder').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+    </script>
+</body>
+</html>
