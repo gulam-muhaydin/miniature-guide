@@ -104,7 +104,13 @@ if (document.getElementById('auth-form')) {
                 credentials: 'include',
                 body: JSON.stringify(body)
             });
-            const data = await res.json();
+            const raw = await res.text();
+            let data = {};
+            try {
+                data = raw ? JSON.parse(raw) : {};
+            } catch (e) {
+                data = {};
+            }
             if (res.ok) {
                 let user = data?.user;
                 if (!user) {
@@ -121,7 +127,7 @@ if (document.getElementById('auth-form')) {
                     setUidCookie(user);
                     checkRedirect(user);
                 } else {
-                    window.location.href = '/plans.html';
+                    window.location.replace('/plans.html');
                 }
             } else {
                 showPopup(data.message || 'Error occurred', 'error');
