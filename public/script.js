@@ -191,8 +191,7 @@ if (document.getElementById('payment-form')) {
         const btnLoader = submitBtn ? submitBtn.querySelector('.btn-loader') : null;
 
         if (!userId) {
-            showPopup('Session missing. Please login again.', 'warning');
-            window.location.href = '/index.html';
+            showPopup('Session missing. Please open Plans page and select plan again.', 'warning');
             return;
         }
 
@@ -217,11 +216,7 @@ if (document.getElementById('payment-form')) {
                 window.location.href = '/waiting.html';
             } else {
                 if (res.status === 401 || res.status === 404) {
-                    showPopup(data.message || 'Session expired, please login again.', 'warning');
-                    if (!userId) {
-                        window.location.href = '/index.html';
-                        return;
-                    }
+                    showPopup(data.message || 'Session expired. Please try again.', 'warning');
                 }
                 showPopup(data.message || 'Error submitting payment', 'error');
             }
