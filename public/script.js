@@ -29,6 +29,31 @@ function showPopup(message, type = 'info', duration = 2500) {
 
 window.showPopup = showPopup;
 
+async function fileExists(url) {
+    try {
+        const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+        return res.ok;
+    } catch (e) {
+        return false;
+    }
+}
+
+function initDownloadLinks() {
+    const links = document.querySelectorAll('a[href="/EarnTube.apk"]');
+    if (!links.length) return;
+
+    links.forEach((link) => {
+        link.addEventListener('click', async (e) => {
+            const ok = await fileExists('/EarnTube.apk');
+            if (ok) return;
+            e.preventDefault();
+            showPopup('App file available nahi hai (EarnTube.apk missing).', 'error');
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initDownloadLinks);
+
 let isLogin = true;
 
 function getCookieValue(name) {
@@ -46,6 +71,9 @@ function setUidCookie(user) {
     if (!userId) return;
     const maxAge = 7 * 24 * 60 * 60;
     document.cookie = `uid=${encodeURIComponent(userId)}; Path=/; SameSite=Lax; Max-Age=${maxAge}`;
+    try {
+        window.localStorage && window.localStorage.setItem('uid', String(userId));
+    } catch (e) {}
 }
 
 function updateAuthUI() {
@@ -157,7 +185,7 @@ if (document.getElementById('payment-form')) {
             const data = await res.json();
             if (res.ok) {
                 showPopup('Payment proof submitted! Please wait for approval.', 'success');
-                window.location.href = 'waiting.html';
+                window.location.href = '/waiting.html';
             } else {
                 if (res.status === 401 || res.status === 404) {
                     showPopup('Session expired, please login again.', 'warning');
@@ -240,7 +268,12 @@ async function watchVideo() {
 
 function logout() {
     fetch(API_URL + '/auth/logout', { method: 'POST', credentials: 'include' })
-        .finally(() => window.location.href = '/index.html');
+        .finally(() => {
+            try {
+                window.localStorage && window.localStorage.removeItem('uid');
+            } catch (e) {}
+            window.location.href = '/index.html';
+        });
 }
 
 function initMobileHamburgerMenu() {

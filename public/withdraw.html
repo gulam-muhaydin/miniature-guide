@@ -301,23 +301,23 @@
                 <span class="logo"><i class="fa-solid fa-play-circle"></i>Earn<span>Tube</span></span>
             </div>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item">
+                <a href="/dashboard.html" class="nav-item">
                     <i class="fa-solid fa-house"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="videos.html" class="nav-item">
+                <a href="/videos.html" class="nav-item">
                     <i class="fa-solid fa-video"></i>
                     <span>Videos</span>
                 </a>
-                <a href="withdraw.html" class="nav-item active">
+                <a href="/withdraw.html" class="nav-item active">
                     <i class="fa-solid fa-wallet"></i>
                     <span>Withdraw</span>
                 </a>
-                <a href="referral.html" class="nav-item">
+                <a href="/referral.html" class="nav-item">
                     <i class="fa-solid fa-users"></i>
                     <span>Referral</span>
                 </a>
-                <a href="levels.html" class="nav-item">
+                <a href="/levels.html" class="nav-item">
                     <i class="fa-solid fa-layer-group"></i>
                     <span>Levels</span>
                 </a>
@@ -421,7 +421,11 @@
 
         async function loadWithdrawData() {
             try {
-                const res = await fetch('/api/user/profile', { credentials: 'include' });
+                const sessionUid = (new URLSearchParams(window.location.search).get('uid') || (window.localStorage && window.localStorage.getItem('uid')) || (window.getCookieValue && window.getCookieValue('uid')) || '');
+                const res = await fetch('/api/user/profile', {
+                    credentials: 'include',
+                    headers: sessionUid ? { 'X-User-Id': sessionUid } : {}
+                });
                 const user = await res.json();
                 
                 if (!res.ok) return window.location.href = '/index.html';
@@ -466,6 +470,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({
+                        userId: (new URLSearchParams(window.location.search).get('uid') || (window.localStorage && window.localStorage.getItem('uid')) || (window.getCookieValue && window.getCookieValue('uid')) || null),
                         amount,
                         accountNumber: accNumber,
                         accountTitle: accTitle,

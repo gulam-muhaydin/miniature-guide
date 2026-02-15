@@ -14,13 +14,32 @@ const getToken = (req) => {
   return decodeURIComponent(tokenCookie.split('=').slice(1).join('='));
 };
 
+const getUid = (req) => {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) return null;
+  const uidCookie = cookieHeader.split(';').map(c => c.trim()).find(c => c.startsWith('uid='));
+  if (!uidCookie) return null;
+  return decodeURIComponent(uidCookie.split('=').slice(1).join('='));
+};
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
   try {
     const token = getToken(req);
-    if (!token) return res.status(401).json({ message: 'No token' });
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const uid = getUid(req);
+    const bodyUserId = req.body?.userId;
+
+    let userId = bodyUserId || uid;
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userId = decoded.userId;
+      } catch (e) {
+        return res.status(401).json({ message: 'Invalid session' });
+      }
+    }
+    if (!userId) return res.status(401).json({ message: 'No session' });
 
     const { amount, accountNumber, accountTitle, method } = req.body || {};
 
@@ -33,14 +52,14 @@ module.exports = async (req, res) => {
     }
 
     await connectDB();
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     const balance = user.balance || 0;
-    const userId = user._id || user.id;
+    const dbUserId = user._id || user.id;
     let referrals = user.referralCount || 0;
     try {
-      const referredUsers = await User.find({ referredBy: userId });
+      const referredUsers = await User.find({ referredBy: dbUserId });
       if (Array.isArray(referredUsers)) {
         referrals = referredUsers.length;
       }

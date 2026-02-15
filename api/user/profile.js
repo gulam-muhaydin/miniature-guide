@@ -14,14 +14,33 @@ const getToken = (req) => {
   return decodeURIComponent(tokenCookie.split('=').slice(1).join('='));
 };
 
+const getUid = (req) => {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) return null;
+  const uidCookie = cookieHeader.split(';').map(c => c.trim()).find(c => c.startsWith('uid='));
+  if (!uidCookie) return null;
+  return decodeURIComponent(uidCookie.split('=').slice(1).join('='));
+};
+
 module.exports = async (req, res) => {
   try {
     const token = getToken(req);
-    if (!token) return res.status(401).json({ message: 'No token' });
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const uid = getUid(req);
+    const headerUserId = req.headers['x-user-id'];
+
+    let sessionUserId = headerUserId || uid;
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        sessionUserId = decoded.userId;
+      } catch (e) {
+        return res.status(401).json({ message: 'Invalid session' });
+      }
+    }
+    if (!sessionUserId) return res.status(401).json({ message: 'No session' });
 
     await connectDB();
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(sessionUserId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     // Add dynamic fields for videos and referrals
