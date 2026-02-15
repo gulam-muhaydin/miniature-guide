@@ -53,6 +53,7 @@ function updateAuthUI() {
     const subtitle = document.getElementById('auth-subtitle');
     const btn = document.getElementById('auth-btn');
     const usernameGroup = document.getElementById('username-group');
+    const usernameInput = document.getElementById('username');
     const toggle = document.getElementById('auth-toggle');
     if (!title || !btn || !usernameGroup || !toggle) return;
     title.innerText = isLogin ? 'Welcome Back' : 'Create Account';
@@ -63,6 +64,10 @@ function updateAuthUI() {
     }
     btn.innerText = isLogin ? 'Sign In' : 'Create Account';
     usernameGroup.style.display = isLogin ? 'none' : 'block';
+    if (usernameInput) {
+        usernameInput.required = !isLogin;
+        if (isLogin) usernameInput.value = '';
+    }
     toggle.innerHTML = isLogin
         ? "New to EarnTube? <span onclick='toggleAuth()'>Create an account</span>"
         : "Already have an account? <span onclick='toggleAuth()'>Sign In</span>";
@@ -87,6 +92,11 @@ if (document.getElementById('auth-form')) {
         const endpoint = isLogin ? '/auth/login' : '/auth/signup';
         const body = isLogin ? { email, password } : { email, password, username, referredBy: ref };
 
+        if (!isLogin && (!username || !username.trim())) {
+            showPopup('Username required', 'error');
+            return;
+        }
+
         try {
             const res = await fetch(API_URL + endpoint, {
                 method: 'POST',
@@ -96,8 +106,23 @@ if (document.getElementById('auth-form')) {
             });
             const data = await res.json();
             if (res.ok) {
-                setUidCookie(data.user);
-                checkRedirect(data.user);
+                let user = data?.user;
+                if (!user) {
+                    try {
+                        const profileRes = await fetch(API_URL + '/user/profile', {
+                            credentials: 'include'
+                        });
+                        if (profileRes.ok) {
+                            user = await profileRes.json();
+                        }
+                    } catch (e) {}
+                }
+                if (user) {
+                    setUidCookie(user);
+                    checkRedirect(user);
+                } else {
+                    window.location.href = '/plans.html';
+                }
             } else {
                 showPopup(data.message || 'Error occurred', 'error');
             }
